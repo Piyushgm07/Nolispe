@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>nolispe | Alpha inbox</title>
+<style>
+body{margin:0;font:16px/1.5 system-ui,sans-serif;background:#F6F8FB;color:#12203A}
+.box{max-width:640px;margin:0 auto;padding:16px}
+input,textarea,button{font:inherit;padding:10px 12px;border:2px solid #12203A;border-radius:8px;background:#fff;color:#12203A}
+button{background:#2457FF;color:#fff;font-weight:600;cursor:pointer}
+button.alt{background:#fff;color:#12203A}
+.row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.th{display:block;width:100%;text-align:left;margin:8px 0}
+.th small{display:block;font-weight:400;opacity:.7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#msgs{display:flex;flex-direction:column;gap:8px;margin:12px 0;max-height:58vh;overflow-y:auto}
+.b{max-width:84%;padding:10px 14px;border-radius:14px;border:1.5px solid #12203A;white-space:pre-wrap;word-break:break-word}
+.b.them{align-self:flex-start;background:#fff}
+.b.mine{align-self:flex-end;background:#2457FF;color:#fff}
+.b img{max-width:100%;border-radius:8px;display:block;margin-top:6px}
+</style>
+</head>
+<body>
+<div class="box">
+  <div id="login">
+    <h2>Alpha login</h2>
+    <input id="em" type="email" placeholder="Email" style="width:100%;margin:6px 0">
+    <input id="pw" type="password" placeholder="Password" style="width:100%;margin:6px 0">
+    <button id="go" type="button">Log in</button>
+    <p id="err"></p>
+  </div>
+  <div id="app" hidden>
+    <div class="row"><b>&alpha; Alpha inbox</b><button class="alt" id="out" type="button">Log out</button></div>
+    <div id="list"></div>
+    <div id="conv" hidden>
+      <button class="alt" id="back" type="button">&larr; Back</button> <b id="who"></b>
+      <div id="msgs"></div>
+      <textarea id="t" rows="3" style="width:100%;box-sizing:border-box" placeholder="Type a reply, or paste your model link"></textarea>
+      <button id="send" type="button" style="width:100%;margin-top:8px">Send as Alpha</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+const FIREBASE_CONFIG = { // paste the same 4 values you used in index.html
+  apiKey:"AIzaSyCJXXTsZS_iIpaWf4YwwsOjfrcFuD79dT4", authDomain:"nolispe-843b7.firebaseapp.com", projectId:"nolispe-843b7", appId:"1:459387436851:web:824d9bbf35b652fad18846"
+};
+import {initializeApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import {getFirestore,doc,setDoc,addDoc,collection,query,orderBy,onSnapshot,serverTimestamp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const g=id=>document.getElementById(id);
+const app=initializeApp(FIREBASE_CONFIG), auth=getAuth(app), db=getFirestore(app);
+let cur=null, unList=null, unMsgs=null;
+
+g("go").onclick=()=>signInWithEmailAndPassword(auth,g("em").value.trim(),g("pw").value)
+  .catch(()=>{g("err").textContent="Wrong email or password."});
+g("out").onclick=()=>signOut(auth);
+
+onAuthStateChanged(auth,u=>{
+  const ok=u&&!u.isAnonymous;
+  g("login").hidden=ok; g("app").hidden=!ok;
+  if(unList){unList();unList=null}
+  if(!ok) return;
+  unList=onSnapshot(query(collection(db,"threads"),orderBy("lastAt","desc")),s=>{
+    const l=g("list"); l.textContent="";
+    if(s.empty) l.textContent="No questions yet.";
+    s.docs.forEach(d=>{
+      const x=d.data(), b=document.createElement("button"), n=document.createElement("b"), m=document.createElement("small");
+      b.className="th alt"; n.textContent=x.name||"Student"; m.textContent=x.lastText||"";
+      b.append(n,m); b.onclick=()=>openThread(d.id,x.name); l.append(b);
+    });
+  },()=>alert("No permission. Check the Firestore rules and the email inside them."));
+});
+
+function openThread(id,name){
+  cur=id; g("list").hidden=true; g("conv").hidden=false; g("who").textContent=name||"Student";
+  if(unMsgs) unMsgs();
+  unMsgs=onSnapshot(query(collection(db,"threads",id,"messages"),orderBy("at")),s=>{
+    const box=g("msgs"); box.textContent="";
+    s.docs.forEach(d=>{
+      const m=d.data(), b=document.createElement("div");
+      b.className="b "+(m.from==="alpha"?"mine":"them");
+      b.append(m.text||"");
+      if(m.image&&m.image.startsWith("data:image/")){const i=document.createElement("img");i.src=m.image;b.append(i)}
+      box.append(b);
+    });
+    box.scrollTop=box.scrollHeight;
+  });
+}
+g("back").onclick=()=>{ if(unMsgs) unMsgs(); unMsgs=null; cur=null; g("conv").hidden=true; g("list").hidden=false; };
+
+g("send").onclick=async()=>{
+  const text=g("t").value.trim(); if(!text||!cur) return;
+  try{
+    await addDoc(collection(db,"threads",cur,"messages"),{from:"alpha",text,at:serverTimestamp()});
+    await setDoc(doc(db,"threads",cur),{lastAt:serverTimestamp(),lastText:"\u03B1: "+text},{merge:true});
+    g("t").value="";
+  }catch(e){ alert("Could not send. Please try again."); }
+};
+</script>
+</body>
+</html>
