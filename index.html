@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>nolispe | See physics move</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F6F8FB;--ink:#12203A;--muted:#5B6780;--blue:#2457FF;--lemon:#FFD84A;--line:#D8DFEA}
+*{box-sizing:border-box}
+body{margin:0;font:16px/1.6 Figtree,system-ui,sans-serif;color:var(--ink);background:var(--paper)}
+h1,h2,h3,.logo{font-family:'Bricolage Grotesque',sans-serif;line-height:1.1;margin:0}
+a{color:var(--blue)}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+.logo{font-size:1.5rem;font-weight:800;text-decoration:none;color:var(--ink)}
+.logo span{color:var(--blue)}
+nav a.link{margin-left:18px;color:var(--ink);font-weight:600;text-decoration:none}
+.hero{background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:32px 32px;border-bottom:2px solid var(--ink)}
+.hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;padding-bottom:56px;padding-top:24px}
+.hero h1{font-size:clamp(2.4rem,6vw,4.2rem);font-weight:800}
+.hero p{max-width:46ch;color:var(--muted);font-size:1.1rem;margin:16px 0 24px}
+.btn{display:inline-block;padding:12px 20px;border:2px solid var(--ink);border-radius:8px;background:var(--blue);color:#fff;font:600 1rem Figtree,sans-serif;text-decoration:none;cursor:pointer}
+.btn.alt{background:#fff;color:var(--ink);margin-left:8px}
+.arc path{fill:none;stroke:var(--blue);stroke-width:3;stroke-dasharray:6 8;stroke-dashoffset:600;animation:draw 2.4s ease-out forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+section{padding:56px 0}
+h2{font-size:2rem;font-weight:800}
+.sub{color:var(--muted);margin:8px 0 24px;max-width:60ch}
+#search{width:100%;max-width:360px;padding:10px 12px;border:2px solid var(--ink);border-radius:8px;font:inherit;margin-bottom:24px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.card{text-align:left;background:#fff;border:2px solid var(--ink);border-radius:10px;padding:18px;cursor:pointer;font:inherit;color:inherit}
+.card:hover,.card:focus-visible{border-color:var(--blue);outline:none;box-shadow:4px 4px 0 var(--blue)}
+.card h3{font-size:1.15rem;margin-bottom:6px}
+.card p{margin:0;color:var(--muted);font-size:.95rem}
+.card small{display:block;margin-top:12px;color:var(--blue);font-weight:600}
+.ask{background:var(--lemon);border-block:2px solid var(--ink)}
+form{display:grid;gap:14px;max-width:560px}
+label{font-weight:600;display:grid;gap:6px}
+input,textarea{padding:10px 12px;border:2px solid var(--ink);border-radius:8px;font:inherit;background:#fff}
+textarea{min-height:120px;resize:vertical}
+#status{font-weight:600;min-height:1.5em}
+footer{padding:28px 0;color:var(--muted);font-size:.9rem}
+dialog{width:min(1000px,96vw);height:90vh;padding:0;border:2px solid var(--ink);border-radius:10px;overflow:hidden}
+dialog::backdrop{background:rgba(18,32,58,.6)}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 14px;border-bottom:2px solid var(--ink);background:#fff}
+.bar b{font-family:'Bricolage Grotesque',sans-serif}
+dialog iframe{width:100%;height:calc(100% - 52px);border:0;background:#fff}
+@media(max-width:760px){.hero .wrap{grid-template-columns:1fr}.arc{display:none}}
+@media(prefers-reduced-motion:reduce){.arc path{animation:none;stroke-dashoffset:0}}
+</style>
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <nav style="grid-column:1/-1">
+      <a class="logo" href="#top"><span>nolispe</span></a>
+      <div><a class="link" href="#models">Models</a><a class="link" href="#questions">Questions</a><a class="link" href="#ask">Ask</a></div>
+    </nav>
+    <div id="top">
+      <h1>See the physics move.</h1>
+      <p>Change the angle, the mass or the charge and watch the diagram respond. Open a model below, or send us a question and get your own model back.</p>
+      <a class="btn" href="#models">Browse models</a><a class="btn alt" href="#ask">Ask a question</a>
+    </div>
+    <svg class="arc" viewBox="0 0 400 260" aria-hidden="true">
+      <line x1="10" y1="240" x2="390" y2="240" stroke="#12203A" stroke-width="3"/>
+      <path d="M20 240 Q200 -80 380 240"/>
+      <circle cx="20" cy="240" r="8" fill="#12203A"/>
+    </svg>
+  </div>
+</header>
+
+<main class="wrap">
+  <section id="models">
+    <h2>Interactive models</h2>
+    <p class="sub">Tap a model to open it. Drag the controls and see what changes.</p>
+    <input id="search" type="search" placeholder="Search models and questions" aria-label="Search">
+    <div class="grid" id="modelGrid"></div>
+  </section>
+  <section id="questions" style="padding-top:0">
+    <h2>Popular questions</h2>
+    <p class="sub">Common exam questions, each with a model you can play with.</p>
+    <div class="grid" id="questionGrid"></div>
+  </section>
+</main>
+
+<section class="ask" id="ask">
+  <div class="wrap">
+    <h2>Ask a question</h2>
+    <p class="sub">Type your question or attach a photo of it. We will send you an interactive model, usually within 10 to 15 minutes.</p>
+    <form id="askForm">
+      <label>Your name <input name="name" required></label>
+      <label>Email or WhatsApp number (so we can send the model) <input name="contact" required></label>
+      <label>Your question <textarea name="question" placeholder="Type it here, or leave empty if you attach a photo"></textarea></label>
+      <label>Photo of the question (optional) <input type="file" name="image" accept="image/*"></label>
+      <button class="btn" type="submit">Send question</button>
+      <div id="status" role="status"></div>
+    </form>
+  </div>
+</section>
+
+<footer><div class="wrap">&copy; <span id="year"></span> nolispe. Made for students.</div></footer>
+
+<dialog id="viewer">
+  <div class="bar"><b id="vTitle"></b><span><a id="vLink" href="#" target="_blank" rel="noopener">Open in new tab</a> &nbsp; <button class="btn alt" style="margin:0;padding:6px 12px" id="vClose">Close</button></span></div>
+  <iframe id="vFrame" title="Interactive model" allow="fullscreen"></iframe>
+</dialog>
+
+<script>
+/* ===== SETTINGS: the only part you may ever need to edit ===== */
+const SHEET_CSV_URL = "";  // paste your published Google Sheet CSV link between the quotes
+const FORM_URL = "https://formspree.io/f/xyeedolp"; // paste your Formspree link here
+
+/* Shown when no Google Sheet is connected. Format: type is "model" or "question" */
+const DEFAULT_ITEMS = [
+ {type:"model",title:"Inclined plane",desc:"Forces and friction on a slope.",link:"https://codepen.io/kihxzlgf-the-sans/full/xbqyrzW"},
+ {type:"model",title:"Projectile motion",desc:"Range, height and time of flight.",link:"https://codepen.io/editor/kihxzlgf-the-sans/full/01a18c21-beb7-7a4c-99a5-584b570fc074"},
+ {type:"model",title:"Atwood machine",desc:"Two masses over a pulley.",link:"https://codepen.io/editor/kihxzlgf-the-sans/full/01a18c54-22ea-7466-95dc-bc75725338e3"},
+ {type:"model",title:"Charged particle in a magnetic field",desc:"How the path bends with speed and field.",link:"https://codepen.io/editor/kihxzlgf-the-sans/full/01a18c5e-7299-765f-ac63-5cb908a14d0a"},
+ {type:"model",title:"Disc vs ring on an incline",desc:"Which one rolls down faster, and why.",link:"https://codepen.io/editor/kihxzlgf-the-sans/full/01a18c63-af75-77c4-80f7-50dc935b224c"},
+ {type:"question",title:"Question 1",desc:"Replace this with a short description.",link:"https://codepen.io/editor/kihxzlgf-the-sans/full/01a18d35-aaca-7d24-94ff-0e78d6767ba6"},
+ {type:"question",title:"Question 2",desc:"Replace this with a short description.",link:"https://codepen.io/editor/kihxzlgf-the-sans/full/01a18d44-3ee1-71d5-80af-561050c3bb87"},
+ {type:"question",title:"Question 3",desc:"Replace this with a short description.",link:"https://codepen.io/editor/kihxzlgf-the-sans/full/01a18d46-6648-7fee-8d89-641ee511a577"},
+ {type:"question",title:"Question 4",desc:"Replace this with a short description.",link:"https://codepen.io/editor/kihxzlgf-the-sans/full/01a18d51-213b-72b9-bb4e-f0e169153d85"}
+];
+/* ============================================================ */
+
+const $ = s => document.querySelector(s);
+let items = DEFAULT_ITEMS;
+$("#year").textContent = new Date().getFullYear();
+
+function parseCSV(t){
+  const rows=[];let r=[],c="",q=false;
+  for(let i=0;i<t.length;i++){const ch=t[i];
+    if(q){if(ch=='"'&&t[i+1]=='"'){c+='"';i++}else if(ch=='"')q=false;else c+=ch}
+    else if(ch=='"')q=true;else if(ch==','){r.push(c);c=""}
+    else if(ch=='\n'){r.push(c);rows.push(r);r=[];c=""}else if(ch!='\r')c+=ch}
+  if(c||r.length){r.push(c);rows.push(r)}
+  return rows;
+}
+
+async function loadItems(){
+  if(SHEET_CSV_URL){
+    try{
+      const res = await fetch(SHEET_CSV_URL);
+      const rows = parseCSV(await res.text()).slice(1);
+      const list = rows.map(([type,title,desc,link])=>({type:(type||"").trim().toLowerCase(),title:(title||"").trim(),desc:(desc||"").trim(),link:(link||"").trim()}))
+        .filter(x=>x.title&&/^https?:\/\//.test(x.link));
+      if(list.length) items = list;
+    }catch(e){console.warn("Sheet not loaded, using built-in list",e)}
+  }
+  render();
+}
+
+function render(){
+  const term = $("#search").value.toLowerCase();
+  const fill = (type,box) => {
+    box.textContent = "";
+    const shown = items.filter(x=>x.type===type && (x.title+" "+x.desc).toLowerCase().includes(term));
+    if(!shown.length){box.textContent="Nothing found.";return}
+    shown.forEach(x=>{
+      const b = document.createElement("button");
+      b.className="card";
+      const h=document.createElement("h3");h.textContent=x.title;
+      const p=document.createElement("p");p.textContent=x.desc;
+      const s=document.createElement("small");s.textContent="Open model";
+      b.append(h,p,s);
+      b.onclick=()=>openModel(x);
+      box.append(b);
+    });
+  };
+  fill("model",$("#modelGrid"));
+  fill("question",$("#questionGrid"));
+}
+
+function openModel(x){
+  $("#vTitle").textContent=x.title;
+  $("#vLink").href=x.link;
+  $("#vFrame").src=x.link;
+  $("#viewer").showModal();
+}
+$("#vClose").onclick=()=>$("#viewer").close();
+$("#viewer").addEventListener("close",()=>{$("#vFrame").src="about:blank"});
+$("#search").addEventListener("input",render);
+
+$("#askForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const f=e.target, st=$("#status"), data=new FormData(f);
+  const file=data.get("image");
+  if(!data.get("question").trim() && !(file && file.size)){st.textContent="Please type your question or attach a photo.";return}
+  if(file && file.size>5*1024*1024){st.textContent="The photo is over 5 MB. Please use a smaller one.";return}
+  st.textContent="Sending...";
+  try{
+    const res=await fetch(FORM_URL,{method:"POST",body:data,headers:{Accept:"application/json"}});
+    if(!res.ok) throw new Error();
+    f.reset();
+    st.textContent="Sent. Watch your email or WhatsApp for your model in about 10 to 15 minutes.";
+  }catch(err){
+    st.textContent="Could not send. Please check your internet and try again.";
+  }
+});
+
+loadItems();
+</script>
+</body>
+</html>
